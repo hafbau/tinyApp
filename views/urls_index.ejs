@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
   <meta charset='utf-8'>
-  <%- include partials/_header.ejs %>
 </head>
 <style type="text/css">
   a {
@@ -11,11 +10,12 @@
 </style>
 <body>
 
+    <%- include partials/_header.ejs %>
     <ul>
     <% for (var url in urls) { %>
       <li style="margin: 10px;">
-        <%= `${url} ==> ` %>
-        <a href="/urls/<%= url %>"><%= urls[url] %></a>
+        <a href="/u/<%= url %>"><%= `${url} ==> ` %></a>
+        <%= urls[url] %>
         <a href="/urls/<%= url %>">Edit</a>
         <form method="POST" action="/urls/<%= url %>/delete" style="display: inline-block;">
           <button>DELETE</button>

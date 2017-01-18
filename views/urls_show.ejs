@@ -2,12 +2,11 @@
 <html lang="en">
 <head>
   <meta charset='utf-8'>
-  <%- include partials/_header.ejs %>
 </head>
 <body>
+    <%- include partials/_header.ejs %>
 
     <h1>Short url: <%= shortURL %></h1>
-
     <form method="POST" action="/urls/<%= shortURL %>">
         <label for=longURL></label>
         <input type="textbox" name="longURL" value="<%= fullURL %>">
