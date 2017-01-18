@@ -26,21 +26,44 @@ function formatURL (longU) {
   return longU;
 }
 
-function getRegisteredEmails(usrs) {
-  let emails = [];
+function getUsersProp(prop, usrs) {
+  let props = [];
   for(let usr in usrs) {
-    emails.push(usrs[usr].email);
+    props.push(usrs[usr][prop]);
   }
-  return emails;
+  return props;
+}
+
+function validateUser(action, reqObj) {
+  let emails = getUsersProp('email', users);
+  let email = reqObj.body.email;
+  
+  if(email) {
+    let truth = emails.includes(email);
+    if(!truth) return;
+    let pswd = findUserBy("email", email, users).password;
+    return truth && pswd === reqObj.body.password;
+  }
+}
+
+function findUserBy(propType, prop, users) {
+  for (let user in users) {
+    if (prop === users[user][propType]) {
+      return users[user];
+    }
+  }
 }
 
 function validateUserRegistration(reqObj, resObj) {
-  let emails = getRegisteredEmails(users);
+  let emails = getUsersProp('email', users);
   let email = reqObj.body.email;
   let truth;
   truth = truth || (email && !emails.includes(email));
   return truth && !!reqObj.body.password;
 }
+
+// for debugging - remember to delete!!!
+// app.get("/users", (req, res) => { res.send(users) });
 
 app.get("/", (req, res) => {
   res.end("<html><body>Hello urls <a href='/urls'>urls list</a></body></html>\n");
@@ -62,7 +85,7 @@ app.get("/urls", (req, res) => {
     formType: undefined,
     urls: urlDatabase
   };
-  
+
   res.render("urls_index", templateVars);
 });
 
@@ -151,8 +174,12 @@ app.post("/urls/:shortURL", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  res.cookie("username", req.body.username);
-  res.redirect("/");
+  if(validateUser('login', req)) {
+    res.cookie("user_id", findUserBy("email", req.body.email, users).id);
+    res.redirect("/");
+  } else {
+    res.render('error', {err_mesg: 'Error 403: Bad credentials :('})
+  }
 });
 
 app.post("/logout", (req, res) => {
