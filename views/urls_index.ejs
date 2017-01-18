@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset='utf-8'>
+  <%- include partials/_header.ejs %>
+</head>
+<style type="text/css">
+  a {
+    padding: 10px;
+  }
+</style>
+<body>
+
+    <ul>
+    <% for (var url in urls) { %>
+      <li style="margin: 10px;">
+        <%= `${url} ==> ` %>
+        <a href="/urls/<%= url %>"><%= urls[url] %></a>
+        <a href="/urls/<%= url %>">Edit</a>
+        <form method="POST" action="/urls/<%= url %>/delete" style="display: inline-block;">
+          <button>DELETE</button>
+        </form>
+      </li>
+    <% } %>
+
+      <li><a href="/urls/new">Shorten new url?</a></li>
+    </ul>
+</body>
+</html>
