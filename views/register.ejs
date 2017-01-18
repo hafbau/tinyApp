@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset='utf-8'>
+</head>
+<body>
+    <%- include partials/_header.ejs %>
+
+    <h1>Hello there, Register here</h1>
+    <form method="POST" action="/register">
+        <label for="email"></label>
+        <input type="email" name="email" placeholder="email here..">
+        <label for="password"></label>
+        <input type="password" name="password">
+        <button>register</button>
+    </form>
+    <a href="/urls">Go to Index</a>
+</body>
+</html>

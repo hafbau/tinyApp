@@ -13,6 +13,10 @@ var urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+var users = {
+
+}
+
 function generateRandomString() {
   return Math.floor((1 + Math.random()) * 0x100000).toString(16);
 }
@@ -20,6 +24,10 @@ function generateRandomString() {
 function formatURL (longU) {
   if (!longU.includes("http")) { return "http://" + longU }
   return longU;
+}
+
+function validateUserRegistration(reqObj, resObj) {
+
 }
 
 app.get("/", (req, res) => {
@@ -70,6 +78,26 @@ app.get("/u/:shortURL", (req, res) => {
   } else  {
     res.render('error', {err_mesg: 'Error 404: We cant find that!'});
   }
+});
+
+app.get("/register", (req, res) => {
+  let templateVars = { username: req.cookies["username"] };
+  res.render("register", templateVars);
+});
+
+app.post("/register", (req, res) => {
+  let randomID;
+  do {
+    randomID = generateRandomString();
+  } while(users[randomID])
+
+  users[randomID] = {};
+  users[randomID].id = randomID;
+  users[randomID].email = req.body.email;
+  users[randomID].password = req.body.password;
+
+  res.cookie("user_id", randomID);
+  res.redirect("/");
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
