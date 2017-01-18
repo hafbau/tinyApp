@@ -6,13 +6,13 @@
 <body>
     <%- include partials/_header.ejs %>
 
-    <h1>Hello there, Register here</h1>
-    <form method="POST" action="/register">
+    <h1>Hello there, <%= formType %> here</h1>
+    <form method="POST" action="/<%= formType %>">
         <label for="email"></label>
         <input type="email" name="email" placeholder="email here..">
         <label for="password"></label>
         <input type="password" name="password">
-        <button>register</button>
+        <button><%= formType %></button>
     </form>
     <a href="/urls">Go to Index</a>
 </body>

@@ -1,13 +1,19 @@
 <title>TinyApp</title>
-<% if (username) { %>
-  <h5>logged in as: <%= username %></h5>
+<% if (useremail) { %>
+  <h5>logged in as: <%= useremail %></h5>
   <form method="POST" action="/logout">
     <button>logout</button>
   </form>
 <% } else { %>
-  <form method="POST" action="/login">
-    <label for="username"></label>
-    <input type="texbox" name="username" placeholder="username here">
-    <button>sign in</button>
-  </form>
+  <% if (formType === 'register') { %>
+    <a href="/login">login</a>
+  <% } else { %>
+    <% if (formType === 'login') { %>
+      <a href="/register">register</a>
+    <% } else { %>
+      <a href="/login">login</a>
+      <span> OR </span>
+      <a href="/register">register</a>
+    <% } %>
+  <% } %>
 <% } %>
