@@ -1,16 +1,18 @@
 var express = require("express");
+var cookieSession = require("cookie-session");
 var app = express();
-cookieParser = require('cookie-parser');
+
+const bcrypt = require('bcrypt');
 var PORT = process.env.PORT || 8080; // default port 8080
 
 app.set("view engine", "ejs");
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(cookieParser());
+app.use(cookieSession({signed: false}));
 
 var urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  // "b2xVn2": "http://www.lighthouselabs.ca",
+  // "9sm5xK": "http://www.google.com"
 };
 
 var users = {
@@ -42,7 +44,7 @@ function validateUser(action, reqObj) {
     let truth = emails.includes(email);
     if(!truth) return;
     let pswd = findUserBy("email", email, users).password;
-    return truth && pswd === reqObj.body.password;
+    return truth && bcrypt.compareSync(reqObj.body.password, pswd);
   }
 }
 
@@ -62,8 +64,16 @@ function validateUserRegistration(reqObj, resObj) {
   return truth && !!reqObj.body.password;
 }
 
+function filterUrlsByEmail(email, urls) {
+  let filtered = {};
+  for(let item in urls) {
+    urls[item].email === email && (filtered[item] = urls[item]);
+  }
+  return filtered;
+}
+
 // for debugging - remember to delete!!!
-// app.get("/users", (req, res) => { res.send(users) });
+app.get("/links", (req, res) => { res.send(urlDatabase) });
 
 app.get("/", (req, res) => {
   res.end("<html><body>Hello urls <a href='/urls'>urls list</a></body></html>\n");
@@ -78,32 +88,32 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  let user = users[req.cookies["user_id"]];
+  let user = users[req.session.user_id];
   let email = user ? user.email : undefined;
   let templateVars = {
     useremail: email,
     formType: undefined,
-    urls: urlDatabase
+    urls: filterUrlsByEmail(email, urlDatabase)
   };
 
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-  let user = users[req.cookies["user_id"]];
+  let user = users[req.session.user_id];
   let email = user ? user.email : undefined;
   let templateVars = { useremail: email, formType: undefined };
   res.render("urls_new", templateVars);
 });
 
 app.get("/urls/:id", (req, res) => {
-  let user = users[req.cookies["user_id"]];
+  let user = users[req.session.user_id];
   let email = user ? user.email : undefined;
   let templateVars = {
     useremail: email,
     formType: undefined,
     shortURL: req.params.id,
-    fullURL: urlDatabase[req.params.id]
+    fullURL: urlDatabase[req.params.id].long
   };
 
   res.render("urls_show", templateVars);
@@ -112,31 +122,31 @@ app.get("/urls/:id", (req, res) => {
 app.post("/urls", (req, res) => {
   let shortU = generateRandomString();
   let longU = req.body.longURL;
-
+  let useremail = req.body.useremail;
   longU = formatURL(longU);
 
-  urlDatabase[shortU] = longU;
+  urlDatabase[shortU] = { long: longU, email: useremail};
   res.redirect(`/urls/${shortU}`);
 });
 
 app.get("/u/:shortURL", (req, res) => {
   let longURL = urlDatabase[req.params.shortURL];
   if (longURL) {
-  res.redirect(longURL);
+    res.redirect(longURL.long);
   } else  {
     res.render('error', {err_mesg: 'Error 404: We cant find that!'});
   }
 });
 
 app.get("/register", (req, res) => {
-  let user = users[req.cookies["user_id"]];
+  let user = users[req.session.user_id];
   let email = user ? user.email : undefined;
   let templateVars = { useremail: email, formType: 'register' };
   res.render("register", templateVars);
 });
 
 app.get("/login", (req, res) => {
-  let user = users[req.cookies["user_id"]];
+  let user = users[req.session.user_id];
   let email = user ? user.email : undefined;
   let templateVars = { useremail: email, formType: 'login' };
   res.render("register", templateVars);
@@ -153,8 +163,8 @@ app.post("/register", (req, res) => {
     users[randomID] = {};
     users[randomID].id = randomID;
     users[randomID].email = req.body.email;
-    users[randomID].password = req.body.password;
-    res.cookie("user_id", randomID);
+    users[randomID].password = bcrypt.hashSync(req.body.password, 10);
+    req.session.user_id = randomID;
     res.redirect("/");
   } else { res.render('error', {err_mesg: 'Error 400: Those aint valid!'}); }
 });
@@ -169,13 +179,13 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 app.post("/urls/:shortURL", (req, res) => {
   let shortU = req.params.shortURL;
 
-  urlDatabase[shortU] = formatURL(req.body.longURL);
+  urlDatabase[shortU].long = formatURL(req.body.longURL);
   res.redirect(`/urls/${shortU}`);
 });
 
 app.post("/login", (req, res) => {
   if(validateUser('login', req)) {
-    res.cookie("user_id", findUserBy("email", req.body.email, users).id);
+    req.session.user_id = findUserBy("email", req.body.email, users).id;
     res.redirect("/");
   } else {
     res.render('error', {err_mesg: 'Error 403: Bad credentials :('})
@@ -183,7 +193,7 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("user_id");
+  req.session.user_id = null;
   res.redirect("/");
 });
 

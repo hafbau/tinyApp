@@ -12,17 +12,18 @@
 
     <%- include partials/_header.ejs %>
     <ul>
-    <% for (var url in urls) { %>
-      <li style="margin: 10px;">
-        <a href="/u/<%= url %>"><%= `${url} ==> ` %></a>
-        <%= urls[url] %>
-        <a href="/urls/<%= url %>">Edit</a>
-        <form method="POST" action="/urls/<%= url %>/delete" style="display: inline-block;">
-          <button>DELETE</button>
-        </form>
-      </li>
+    <% if(useremail) { %>
+      <% for (var url in urls) { %>
+        <li style="margin: 10px;">
+          <a href="/u/<%= url %>"><%= `${url} ==> ` %></a>
+          <%= urls[url].long %>
+          <a href="/urls/<%= url %>">Edit</a>
+          <form method="POST" action="/urls/<%= url %>/delete" style="display: inline-block;">
+            <button>DELETE</button>
+          </form>
+        </li>
+      <% } %>
     <% } %>
-
     <% if(useremail) { %>
       <li><a href="/urls/new">Shorten new url?</a></li>
     <% } %>
