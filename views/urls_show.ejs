@@ -11,21 +11,19 @@
       <dd><a href="/u/<%= shortURL %>"><%= shortURL %></a></dd>
       <dt>original url</dt>
       <dd>
-        <form method="POST" action="/urls/<%= shortURL %>">
-            <label for=longURL></label>
-            <input type="textbox" name="longURL" value="<%= fullURL %>">
-            <button>update</button>
+        <form class="inline" method="POST" action="/urls/<%= shortURL %>">
+            <label for=longURL></label><input type="textbox" name="longURL" value="<%= fullURL %>"><button>update</button>
         </form>
-      </dd>
-      <dd>
-        <form method="POST" action="/urls/<%= shortURL %>/delete">
+        <form id="faded" class="inline" method="POST" action="/urls/<%= shortURL %>/delete">
             <button>delete</button>
         </form>
       </dd>
     </dl>
+    <br>
+    <hr>
     <nav>
-      <a href="/urls">go to index</a>
-      <a href="/urls/new">shorten new</a>
+      <a href="/urls"><div class="navig-link">my links</div></a>
+      <a href="/urls/new"><div class="navig-link-reverse">shorten new</div></a>
     </nav>
 </body>
 </html>

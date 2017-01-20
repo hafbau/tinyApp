@@ -3,52 +3,46 @@
   <div class="container-fluid">
     <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href="#">TinyApp</a>
+      <a class="navbar-brand" href="#"><span class="purple">
+      tiny</span>App</a>
     </div>
 
-    <!-- Collect the nav links, forms, and other content for toggling -->
+    
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav nav-pills nav-right">
         <% if (useremail) { %>
-          <!-- <h5>logged in as: <%= useremail %></h5> -->
-          <li role="presentation" class="active navbar-btn">
+          <li role="presentation" class="active">
             <form method="POST" action="/logout" >
-              <button class="active navbar-btn">logout</button>
+              <button class="navig-link top-nav">logout</button>
             </form>
           </li>
-          <li role="presentation" class="active navbar-btn">
-            <a href="/urls">my links</a>
+          <li role="presentation" class="navig-link-reverse top-nav">
+            <a href="/urls"><div>my links</div></a>
           </li>
           <li role="presentation" class="navbar-text">
-            <p>logged in as <%= useremail %></p>
+            <p><em>logged in as <%= useremail %></em></p>
           </li>
         <% } else { %>
           <% if (formType === 'register') { %>
-            <li role="presentation" class="active navbar-btn">
-              <a href="/login">login</a>
+            <li role="presentation" class="navig-link-reverse top-nav">
+              <a href="/login"><div>login</div></a>
             </li>
           <% } else { %>
             <% if (formType === 'login') { %>
-              <li role="presentation" class="active navbar-btn">
-                <a href="/register">register</a>
+              <li role="presentation" class="navig-link-reverse top-nav">
+                <a href="/register"><div>register</div></a>
               </li>
             <% } else { %>
-              <li role="presentation" class="active navbar-btn">
-                <a href="/login">login</a>
+              <li role="presentation" class="navig-link top-nav">
+                <a href="/login"><div>login</div></a>
               </li>
-              <li role="presentation" class="active navbar-btn">
-                <a href="/register">register</a>
+              <li role="presentation" class="navig-link-reverse top-nav">
+                <a href="/register"><div>register</div></a>
               </li>
             <% } %>
           <% } %>
         <% } %>
       </ul>
-    </div><!-- /.navbar-collapse -->
-  </div><!-- /.container-fluid -->
+    </div>
+  </div>
 </nav>

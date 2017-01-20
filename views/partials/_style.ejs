@@ -14,21 +14,180 @@
     margin: 0 auto;
   }
 
+  .navbar-brand, .navbar-brand span {
+    font-size: 24px;
+    line-height: 1;
+  }
+
+  .purple {
+    color: purple;
+  }
+
+  .nav {
+    height: 50px;
+    margin: 15px 0px;
+  }
+
+  .navbar-header {
+    margin: 15px 0px;
+  }
+
+  form.inline {
+    display: inline-block;
+    width: 400px;
+    height: 50px;
+    padding: 0px;
+    border: 2px solid purple;
+    border-radius: 5px;
+  }
+
+  form.inline > button {
+    width: 86px;
+    height: 100%;
+    background: purple;
+    color: white;
+    border: none;
+  }
+
+  form.inline > input {
+    width: 310px;
+    height: 100%;
+    margin: 0px;
+    padding-left: 10px;
+  }
+
+  #faded {
+    width: 86px;
+  }
+
+  #faded > button {
+    width: 100%;
+    color: purple;
+    background: #E6E6FA;
+  }
+
+  .navig-link, .navig-link-reverse {
+    float: left;
+    width: 140px;
+    height: 55px;
+    padding: 13px 0px;
+    margin-right: 10px;
+    border: 2px solid purple;
+    border-radius: 10px;
+    color: purple;
+    text-align: center;
+  }
+
+  .navig-link-reverse {
+    float: right;
+    color: white;
+    background-color: purple;
+  }
+
+  input[type="text"], input[type="text"] ~ span.input-group-btn > button {
+    height: 55px;
+  }
+
+  input[type="text"] {
+    padding: 0px 15px;
+    font-size: 20px;
+    color: #E6E6FA;
+    border: 2px solid purple;
+    border-right: none;
+  }
+
+  input[type="text"] ~ span.input-group-btn > button {
+    background-color: purple;
+    color: white;
+    font-size: 16px;
+    border: none;
+  }
+
+  li {
+    list-style: none;
+  }
+
+  #list-ul {
+    width: 600px;
+  }
+
+  #go-new {
+    width: 100%;
+    background-color: none;
+    border-radius: 5px;
+    border: 2px solid purple;
+  }
+
+  #go-new > a {
+    width: 100%;
+    color: purple;
+    cursor: pointer;
+  }
+
+  #go-new > a:focus, #go-new > a:hover {
+    text-decoration: none;
+    outline: none;
+  }
+
+  #go-new > a > div {
+    padding: 10px 230px;
+    margin: 0 auto;
+  }
+
   .nav-pills>li {
     float: right;
     margin-left: 4px;
   }
 
   .nav-pills>li>a {
-    height: 65px;
-    line-height: 2.5;
+    color: inherit;
+    padding: 0px;
+    line-height: 1;
   }
 
-.nav-pills>li>button {
-  height: 65px;
+.nav-pills .top-nav, .nav-pills .top-nav > a > div {
+  width: 100px;
+  height: 50px;
+  line-height: 1;
 }
 
-  form > button {
-    padding: 10px 15px;
-  }
+.top-nav > a {
+  margin-top: -14px;
+  display: inline;
+}
+
+.nav > li > a:hover {
+  background-color: transparent;
+}
+
+.top-nav > a > div {
+  padding: 14px 0px;
+  text-align: center;
+}
+
+.table-nav {
+  float: none;
+  display: inline-block;
+  width: 86px;
+  height: 50px;
+  margin: 1px 0px;
+  line-height: 1;
+}
+
+#table-title {
+  margin: 25px 0px -20px;
+}
+
+#table-title span {
+  margin-right: 100px;
+  font-style: italic;
+}
+
+#list-ul > li > a {
+  margin-right: 70px;
+}
+
+form > button {
+  padding: 10px 15px;
+}
 </style>

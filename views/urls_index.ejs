@@ -7,21 +7,30 @@
 <body>
 
     <%- include partials/_header.ejs %>
-    <ul>
+    <div id="go-new"><a href="/urls/new"><div>shorten new</div></a></div>
+    <ul id="list-ul">
     <% if(useremail) { %>
-      <% for (var url in urls) { %>
-        <li style="margin: 10px;">
-          <a href="/u/<%= url %>"><%= `${url} ==> ` %></a>
-          <%= urls[url].long %>
-          <a href="/urls/<%= url %>">Edit</a>
-          <form method="POST" action="/urls/<%= url %>/delete" style="display: inline-block;">
-            <button>DELETE</button>
-          </form>
+      <% if(Object.keys(urls).length > 0) { %>
+        <li id="table-title">
+          <span>tiny link</span>
+          <span>original link</span>
         </li>
+        <% for (var url in urls) { %>
+          <li>
+            <hr>
+            <a href="/u/<%= url %>"><%= `${url}` %></a>
+            <a href="#"><%= urls[url].long %></a>
+            <a href="/urls/<%= url %>">
+              <div class="navig-link-reverse table-nav">edit</div>
+            </a>
+            <form method="POST" action="/urls/<%= url %>/delete" id="faded" class="inline table-nav">
+              <button>delete</button>
+            </form>
+          </li>
+        <% } %>
+      <% } else { %>
+        <h3>You have no links saved, shorten new links to witness the awesomeness</h3>
       <% } %>
-    <% } %>
-    <% if(useremail) { %>
-      <li><a href="/urls/new">Shorten new url?</a></li>
     <% } %>
     </ul>
 </body>
