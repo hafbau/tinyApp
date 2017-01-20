@@ -62,19 +62,10 @@ app.post("/urls", (req, res) => {
 });
 
 // URLS => SCRUD - Read: shows individual urls
-app.get("/urls/:id", (req, res) => {
+app.get("/urls/:shortURL", (req, res) => {
   let user = users[req.session.user_id];
-  let options = {};
-  options.email = user ? user.email : undefined;
-  options.short = req.params.id;
-  options.templateVars = {
-    useremail: options.email,
-    formType: undefined,
-    shortURL: options.short
-  };
-  options.urlDatabase = urlDatabase;
-  options.res = res;
-  decideRoute(options);
+  let options = getRouteOptions(req, res, user);
+  decideShow(options);
 });
 
 app.get("/u/:shortURL", (req, res) => { // public path for redirection to long url
@@ -94,10 +85,10 @@ app.get("/u/:shortURL", (req, res) => { // public path for redirection to long u
 
 // URLS => SCRUD - Update
 app.post("/urls/:shortURL", (req, res) => {
-  let shortU = req.params.shortURL;
+  let user = users[req.session.user_id];
+  let options = getRouteOptions(req, res, user);
 
-  urlDatabase[shortU].long = formatURL(req.body.longURL);
-  res.redirect(`/urls/${shortU}`);
+  decideUpdate(options);
 });
 
 // URLS => SCRUD - Delete
@@ -115,6 +106,7 @@ app.get("/register", (req, res) => {
     useremail: email,
     formType: 'register'
   };
+  if(email) { return res.redirect("/"); }
   res.render("register", templateVars);
 });
 
@@ -147,6 +139,7 @@ app.get("/login", (req, res) => {
     useremail: email,
     formType: 'login'
   };
+  if(email) { return res.redirect("/"); }
   res.render("register", templateVars);
 });
 
@@ -166,7 +159,7 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  req.session.user_id = null;
+  req.session = null;
   res.redirect("/");
 });
 

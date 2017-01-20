@@ -60,15 +60,40 @@ function filterUrlsByEmail(email, urls) {
   return filtered;
 }
 
-function decideRoute(options) {
+function getRouteOptions(req, res, user) {
+  let options = {};
+  options.email = user ? user.email : undefined;
+  options.short = req.params.shortURL;
+  options.templateVars = {
+    useremail: options.email,
+    formType: undefined,
+    shortURL: options.short
+  };
+  options.urlDatabase = urlDatabase;
+  options.res = res; options.req = req;
+  return options;
+}
+
+function show(req, res, templateVars) {
+  let short = req.params.shortURL;
+  templateVars.fullURL = urlDatabase[short].long;
+  res.render("urls_show", templateVars);
+}
+
+function update(req, res, templateVars) {
+  let shortU = req.params.shortURL;
+  urlDatabase[shortU].long = formatURL(req.body.longURL);
+  res.redirect(`/urls/${shortU}`)
+}
+
+function decideRoute(options, routefunc) {
   let email = options.email, urlDatabase = options.urlDatabase,
     short = options.short, templateVars = options.templateVars,
-    res = options.res;
+    res = options.res, req = options.req;
   if(email) {
     if(urlDatabase[short]) {
       if(urlDatabase[short].email === email) {
-        templateVars.fullURL = urlDatabase[short].long
-        res.render("urls_show", templateVars);
+        routefunc(req, res, templateVars);
       } else {
           templateVars.err_mesg = ERROR[403];
           res.status(403);
@@ -86,6 +111,14 @@ function decideRoute(options) {
   }
 }
 
+function decideShow(options) {
+  decideRoute(options, show);
+}
+
+function decideUpdate(options) {
+  decideRoute(options, update);
+}
+
 const ERROR = {
   "400": "Error 400: Could not register with that email and password combination",
   "401": "Error 401: Access denied, login or register to continue.",
@@ -95,12 +128,14 @@ const ERROR = {
 }
 
 module.exports = {
-  decideRoute: decideRoute,
+  decideShow: decideShow,
+  decideUpdate: decideUpdate,
   ERROR: ERROR,
   filterUrlsByEmail: filterUrlsByEmail,
   findUserBy: findUserBy,
   formatURL: formatURL,
   generateUniqueKey: generateUniqueKey,
+  getRouteOptions: getRouteOptions,
   validateLogin: validateLogin,
   validateRegistration: validateRegistration
 }
