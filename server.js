@@ -3,10 +3,20 @@ Object.assign(global,
   require("./models"), require("./my_utils")
 );
 
+// Factor out commonalities
+app.all("/*", (req, res, next) => {
+  req.user = users[req.session.user_id];
+  req.email = req.user && req.user.email;
+  req.templateVars = {
+    useremail: req.email,
+    formType: undefined
+  };
+  next();
+});
+
 // Root Path
 app.get("/", (req, res) => {
-  let user = users[req.session.user_id];
-  user ? res.redirect("/urls") : res.redirect("/login");
+  req.user ? res.redirect("/urls") : res.redirect("/login");
 });
 
 // API - lists all urls in JSON
@@ -16,36 +26,20 @@ app.get("/api/urls.json", (req, res) => {
 
 // SCRUD - Search
 app.get("/urls", (req, res) => {
-  let user = users[req.session.user_id];
-  let email = user ? user.email : undefined;
-  let templateVars = {
-    useremail: email,
-    formType: undefined,
-    err_mesg: ERROR[401],
-    urls: filterUrlsByEmail(email, urlDatabase)
-  };
-  if (!email) {
-    res.status(401);
-    res.render("error", templateVars);
+  req.templateVars.urls = filterUrlsByEmail(req.email, urlDatabase);
+  if (!req.email) {
+    renderError(401, res, req.templateVars);
   } else {
-      res.render("urls_index", templateVars);
+      res.render("urls_index", req.templateVars);
   }
 });
 
 // URLS => SCRUD - Create
 app.get("/urls/new", (req, res) => {
-  let user = users[req.session.user_id];
-  let email = user ? user.email : undefined;
-  let templateVars = {
-    useremail: email,
-    err_mesg: ERROR[401],
-    formType: undefined
-  };
-  if (!email) {
-    res.status(401);
-    res.render("error", templateVars);
+  if (!req.email) {
+    renderError(401, res, req.templateVars);
   } else {
-      res.render("urls_new", templateVars);
+      res.render("urls_new", req.templateVars);
   }
 });
 
@@ -63,8 +57,7 @@ app.post("/urls", (req, res) => {
 
 // URLS => SCRUD - Read: shows individual urls
 app.get("/urls/:shortURL", (req, res) => {
-  let user = users[req.session.user_id];
-  let options = getRouteOptions(req, res, user);
+  let options = getRouteOptions(req, res);
   decideShow(options);
 });
 
@@ -73,21 +66,13 @@ app.get("/u/:shortURL", (req, res) => { // public path for redirection to long u
   if (longURL) {
     res.redirect(longURL.long);
   } else {
-    let templateVars = {
-      useremail: undefined,
-      formType: undefined,
-      err_mesg: ERROR[404]
-    };
-    res.status(404);
-    res.render('error', templateVars);
+    renderError(404, res, req.templateVars);
   }
 });
 
 // URLS => SCRUD - Update
 app.post("/urls/:shortURL", (req, res) => {
-  let user = users[req.session.user_id];
-  let options = getRouteOptions(req, res, user);
-
+  let options = getRouteOptions(req, res);
   decideUpdate(options);
 });
 
@@ -100,47 +85,25 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 // USERS => SCRUD - Create Users
 app.get("/register", (req, res) => {
-  let user = users[req.session.user_id];
-  let email = user ? user.email : undefined;
-  let templateVars = {
-    useremail: email,
-    formType: 'register'
-  };
-  if(email) { return res.redirect("/"); }
-  res.render("register", templateVars);
+  req.templateVars.formType = 'register';
+  if(req.email) { return res.redirect("/"); }
+  res.render("register", req.templateVars);
 });
 
 app.post("/register", (req, res) => {
   if(validateRegistration(req)) {
-    let randomID = generateUniqueKey(users);
-    users[randomID] = {
-      id: randomID,
-      email: req.body.email,
-      password: bcrypt.hashSync(req.body.password, 10)
-    };
-    req.session.user_id = randomID;
+    req.session.user_id = createUser(req, users);
     res.redirect("/");
   } else {
-      let templateVars = {
-        useremail: undefined,
-        formType: undefined,
-        err_mesg: ERROR[400]
-      };
-      res.status(400);
-      res.render('error', templateVars);
+      renderError(400, res, req.templateVars);
   }
 });
 
 // USERS => Logging
 app.get("/login", (req, res) => {
-  let user = users[req.session.user_id];
-  let email = user ? user.email : undefined;
-  let templateVars = {
-    useremail: email,
-    formType: 'login'
-  };
-  if(email) { return res.redirect("/"); }
-  res.render("register", templateVars);
+  req.templateVars.formType = 'login';
+  if(req.email) { return res.redirect("/"); }
+  res.render("register", req.templateVars);
 });
 
 app.post("/login", (req, res) => {
@@ -148,13 +111,7 @@ app.post("/login", (req, res) => {
     req.session.user_id = findUserBy("email", req.body.email, users).id;
     res.redirect("/");
   } else {
-      let templateVars = {
-        useremail: undefined,
-        formType: undefined,
-        err_mesg: ERROR[403]
-      };
-      res.status(403);
-      res.render('error', templateVars);
+      renderError(403, res, req.templateVars);
   }
 });
 

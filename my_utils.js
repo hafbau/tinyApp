@@ -1,3 +1,13 @@
+function createUser(req, users) {
+  let randomID = generateUniqueKey(users);
+  users[randomID] = {
+    id: randomID,
+    email: req.body.email,
+    password: bcrypt.hashSync(req.body.password, 10)
+  };
+  return randomID;
+}
+
 function generateRandomString() {
   return Math.floor((1 + Math.random()) * 0x100000).toString(16);
 }
@@ -60,7 +70,7 @@ function filterUrlsByEmail(email, urls) {
   return filtered;
 }
 
-function getRouteOptions(req, res, user) {
+function getRouteOptions(req, res, user = req.user) {
   let options = {};
   options.email = user ? user.email : undefined;
   options.short = req.params.shortURL;
@@ -95,20 +105,20 @@ function decideRoute(options, routefunc) {
       if(urlDatabase[short].email === email) {
         routefunc(req, res, templateVars);
       } else {
-          templateVars.err_mesg = ERROR[403];
-          res.status(403);
-          res.render("error", templateVars);
+          renderError(403, res, templateVars);
       }
     } else {
-        templateVars.err_mesg = ERROR[404];
-        res.status(404);
-        res.render("error", templateVars);
+        renderError(404, res, templateVars);
     }
   } else {
-      templateVars.err_mesg = ERROR[401];
-      res.status(401);
-      res.render("error", templateVars);
+      renderError(401, res, templateVars);
   }
+}
+
+function renderError (errno, res, templateVars) {
+  templateVars.err_mesg = ERROR[errno];
+  res.status(errno);
+  res.render("error", templateVars);
 }
 
 function decideShow(options) {
@@ -128,6 +138,7 @@ const ERROR = {
 }
 
 module.exports = {
+  createUser: createUser,
   decideShow: decideShow,
   decideUpdate: decideUpdate,
   ERROR: ERROR,
@@ -136,6 +147,7 @@ module.exports = {
   formatURL: formatURL,
   generateUniqueKey: generateUniqueKey,
   getRouteOptions: getRouteOptions,
+  renderError: renderError,
   validateLogin: validateLogin,
   validateRegistration: validateRegistration
 }
