@@ -1,15 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head></head>
-  <body style="font-size:20px; padding:50px;">
+  <head>
+  <meta charset='utf-8'>
+  <%- include partials/_style.ejs %>
+  </head>
+  <body>
     <% include partials/_header %>
+    <br>
+    <h1>Welcome, shorten new links</h1>
+    <hr>
+    <br>
+    <div class="row">
+      <div class="col-lg-6">
+        <form action="/urls" method="POST" class="input-group">
+          <input id="longURL" type="text" name="longURL" class="form-control" placeholder="http://...">
+          <input name="useremail" value="<%= useremail %>" hidden>
+          <span class="input-group-btn">
+            <button class="btn btn-default" type="submit">shorten</button>
+          </span>
+        </form><!-- /input-group -->
+      </div><!-- /.col-lg-6 -->
+    </div><!-- /.row --><!-- 
     <form action="/urls" method="POST" style="margin:150px;">
       <label for="longURL">Enter a URL:</label>
       <input id="longURL" type="text" name="longURL" placeholder="http://" style="width: 300px">
       <input name="useremail" value="<%= useremail %>" hidden>
       <button>Submit</button>
     </form>
-
+ -->
     <a href="/urls">Go to Index</a>
   </body>
 </html>

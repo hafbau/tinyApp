@@ -2,7 +2,15 @@ function generateRandomString() {
   return Math.floor((1 + Math.random()) * 0x100000).toString(16);
 }
 
-function formatURL (longU) {
+function generateUniqueKey(obj) {
+  let key;
+  do {
+    key = generateRandomString();
+  } while(obj[key]);
+  return key;
+}
+
+function formatURL(longU) {
   if (!longU.includes("http")) { return "http://" + longU }
   return longU;
 }
@@ -18,12 +26,13 @@ function getUsersProp(prop, usrs) {
 function validateUser(action, reqObj) {
   let emails = getUsersProp("email", users);
   let email = reqObj.body.email;
-  
   if(email) {
-    let truth = emails.includes(email);
-    if(!truth) return;
+    if(!emails.includes(email)) {
+      return action === "register" ? !!reqObj.body.password : false
+    }
+    if(action === "register") { return; }
     let pswd = findUserBy("email", email, users).password;
-    return truth && bcrypt.compareSync(reqObj.body.password, pswd);
+    return bcrypt.compareSync(reqObj.body.password, pswd);
   }
 }
 
@@ -35,12 +44,12 @@ function findUserBy(propType, prop, users) {
   }
 }
 
-function validateUserRegistration(reqObj, resObj) {
-  let emails = getUsersProp('email', users);
-  let email = reqObj.body.email;
-  let truth;
-  truth = truth || (email && !emails.includes(email));
-  return truth && !!reqObj.body.password;
+function validateRegistration(reqObj) {
+  return validateUser("register", reqObj);
+}
+
+function validateLogin(reqObj) {
+  return validateUser("login", reqObj);
 }
 
 function filterUrlsByEmail(email, urls) {
@@ -51,11 +60,47 @@ function filterUrlsByEmail(email, urls) {
   return filtered;
 }
 
+function decideRoute(options) {
+  let email = options.email, urlDatabase = options.urlDatabase,
+    short = options.short, templateVars = options.templateVars,
+    res = options.res;
+  if(email) {
+    if(urlDatabase[short]) {
+      if(urlDatabase[short].email === email) {
+        templateVars.fullURL = urlDatabase[short].long
+        res.render("urls_show", templateVars);
+      } else {
+          templateVars.err_mesg = ERROR[403];
+          res.status(403);
+          res.render("error", templateVars);
+      }
+    } else {
+        templateVars.err_mesg = ERROR[404];
+        res.status(404);
+        res.render("error", templateVars);
+    }
+  } else {
+      templateVars.err_mesg = ERROR[401];
+      res.status(401);
+      res.render("error", templateVars);
+  }
+}
+
+const ERROR = {
+  "400": "Error 400: Could not register with that email and password combination",
+  "401": "Error 401: Access denied, login or register to continue.",
+  "403": "Error 403: Wrong credentials :(",
+  "404": "Error 404: Sorry we can't find that!",
+  "500": ""
+}
+
 module.exports = {
+  decideRoute: decideRoute,
+  ERROR: ERROR,
   filterUrlsByEmail: filterUrlsByEmail,
   findUserBy: findUserBy,
   formatURL: formatURL,
-  generateRandomString: generateRandomString,
-  validateUser: validateUser,
-  validateUserRegistration: validateUserRegistration
+  generateUniqueKey: generateUniqueKey,
+  validateLogin: validateLogin,
+  validateRegistration: validateRegistration
 }

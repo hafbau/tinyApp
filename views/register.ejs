@@ -2,17 +2,39 @@
 <html lang="en">
 <head>
   <meta charset='utf-8'>
+  <%- include partials/_style.ejs %>
 </head>
 <body>
     <%- include partials/_header.ejs %>
-
+    <br>
     <h1>Hello there, <%= formType %> here</h1>
-    <form method="POST" action="/<%= formType %>">
+    <hr>
+    <br>
+    <!-- <form method="POST" action="/<%= formType %>">
         <label for="email"></label>
         <input type="email" name="email" placeholder="email here..">
         <label for="password"></label>
         <input type="password" name="password">
         <button><%= formType %></button>
+    </form> -->
+    <form method="POST" action="/<%= formType %>" class="form-horizontal">
+      <div class="form-group">
+        <label for="inputEmail3" class="col-sm-2 control-label sr-only">Email</label>
+        <div class="col-sm-12">
+          <input type="email" name="email" class="form-control" id="inputEmail3" placeholder="Email">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="inputPassword3" class="col-sm-2 control-label sr-only">Password</label>
+        <div class="col-sm-12">
+          <input type="password" name="password" class="form-control" id="inputPassword3" placeholder="Password">
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-12">
+          <button type="submit" class="btn btn-default"><%= formType %></button>
+        </div>
+      </div>
     </form>
     <a href="/urls">Go to Index</a>
 </body>

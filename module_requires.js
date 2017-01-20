@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const cookieSession = require("cookie-session");
 const bcrypt = require("bcrypt");
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 3000;
 const bodyParser = require("body-parser");
 
 app.set("view engine", "ejs");

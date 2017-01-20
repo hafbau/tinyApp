@@ -2,16 +2,30 @@
 <html lang="en">
 <head>
   <meta charset='utf-8'>
+  <%- include partials/_style.ejs %>
 </head>
 <body>
     <%- include partials/_header.ejs %>
-
-    <h1>Short url: <%= shortURL %></h1>
-    <form method="POST" action="/urls/<%= shortURL %>">
-        <label for=longURL></label>
-        <input type="textbox" name="longURL" value="<%= fullURL %>">
-        <button>Update</button>
-    </form>
-    <a href="/urls">Go to Index</a>
+    <dl>
+      <dt>short url:</dt> 
+      <dd><a href="/u/<%= shortURL %>"><%= shortURL %></a></dd>
+      <dt>original url</dt>
+      <dd>
+        <form method="POST" action="/urls/<%= shortURL %>">
+            <label for=longURL></label>
+            <input type="textbox" name="longURL" value="<%= fullURL %>">
+            <button>update</button>
+        </form>
+      </dd>
+      <dd>
+        <form method="POST" action="/urls/<%= shortURL %>/delete">
+            <button>delete</button>
+        </form>
+      </dd>
+    </dl>
+    <nav>
+      <a href="/urls">go to index</a>
+      <a href="/urls/new">shorten new</a>
+    </nav>
 </body>
 </html>
