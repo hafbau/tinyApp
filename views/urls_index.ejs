@@ -23,7 +23,7 @@
             <a href="/urls/<%= url %>">
               <div class="navig-link-reverse table-nav">edit</div>
             </a>
-            <form method="POST" action="/urls/<%= url %>/delete" id="faded" class="inline table-nav">
+            <form method="POST" action="/urls/<%= url %>?_method=DELETE" id="faded" class="inline table-nav">
               <button>delete</button>
             </form>
           </li>

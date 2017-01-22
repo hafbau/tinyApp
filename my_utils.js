@@ -86,7 +86,7 @@ function getRouteOptions(req, res, user = req.user) {
 
 function show(req, res, templateVars) {
   let short = req.params.shortURL;
-  templateVars.fullURL = urlDatabase[short].long;
+  templateVars.shortObj = urlDatabase[short];
   res.render("urls_show", templateVars);
 }
 
@@ -129,6 +129,19 @@ function decideUpdate(options) {
   decideRoute(options, update);
 }
 
+function logVisit(req, shortObj) {
+  let id = req.session.visitor_id;
+  shortObj.totalVisits += 1;
+  if(!shortObj.visits[id]) {
+    let visitor_id = "v-" + generateUniqueKey(shortObj.visits);
+    req.session.visitor_id = visitor_id;
+    shortObj.visits[visitor_id] = [(new Date()).toUTCString()];
+    shortObj.totalVisitors += 1;
+  } else {
+    shortObj.visits[id].push((new Date()).toUTCString());
+  }
+}
+
 const ERROR = {
   "400": "Error 400: Could not register with that email and password combination",
   "401": "Error 401: Access denied, login or register to continue.",
@@ -147,6 +160,7 @@ module.exports = {
   formatURL: formatURL,
   generateUniqueKey: generateUniqueKey,
   getRouteOptions: getRouteOptions,
+  logVisit: logVisit,
   renderError: renderError,
   validateLogin: validateLogin,
   validateRegistration: validateRegistration

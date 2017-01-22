@@ -6,24 +6,50 @@
 </head>
 <body>
     <%- include partials/_header.ejs %>
+
+   <a href="/urls/new"><div class="navig-link-reverse">shorten new</div></a>
+   <br>
     <dl>
-      <dt>short url:</dt> 
-      <dd><a href="/u/<%= shortURL %>"><%= shortURL %></a></dd>
-      <dt>original url</dt>
+      <dt>short url: 
+        <a href="/u/<%= shortURL %>"><h1><%= shortURL %></h1></a>
+      </dt>
+      <dd><%= shortObj.totalVisits %> total visits</dd>
+      <dd><%= shortObj.totalVisitors %> unique number of visitors</dd>
+      <br>
+      <dt>original url:</dt>
       <dd>
-        <form class="inline" method="POST" action="/urls/<%= shortURL %>">
-            <label for=longURL></label><input type="textbox" name="longURL" value="<%= fullURL %>"><button>update</button>
+        <form class="inline" method="POST" action="/urls/<%= shortURL %>?_method=PUT">
+            <label for=longURL></label><input type="textbox" name="longURL" value="<%= shortObj.long %>"><button>update</button>
         </form>
-        <form id="faded" class="inline" method="POST" action="/urls/<%= shortURL %>/delete">
+        <form id="faded" class="inline" method="POST" action="/urls/<%= shortURL %>?_method=DELETE">
             <button>delete</button>
         </form>
+      </dd>
+      <br>
+      <hr>
+      <dt>details of visits:</dt> 
+      <dd>
+        <ul id="list-ul">
+          <li id="table-title">
+            <span>visitor id</span>
+            <span>time of visit</span>
+          </li>
+          <% for (var visitor in shortObj.visits) { %>
+            <% shortObj.visits[visitor].forEach(time => { %>
+              <li>
+                <hr>
+                <a><%= visitor %></a>
+                <a><%= time %></a>
+              </li>
+            <% }); %>
+          <% } %>
+        </ul>
       </dd>
     </dl>
     <br>
     <hr>
     <nav>
       <a href="/urls"><div class="navig-link">my links</div></a>
-      <a href="/urls/new"><div class="navig-link-reverse">shorten new</div></a>
     </nav>
 </body>
 </html>

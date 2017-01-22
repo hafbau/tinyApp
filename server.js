@@ -50,7 +50,10 @@ app.post("/urls", (req, res) => {
   longU = formatURL(longU);
   urlDatabase[shortU] = {
     long: longU,
-    email: useremail
+    email: useremail,
+    totalVisits: 0,
+    totalVisitors: 0,
+    visits: {}
   };
   res.redirect(`/urls/${shortU}`);
 });
@@ -62,22 +65,23 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => { // public path for redirection to long url
-  let longURL = urlDatabase[req.params.shortURL];
-  if (longURL) {
-    res.redirect(longURL.long);
+  let shortObj = urlDatabase[req.params.shortURL];
+  if (shortObj) {
+    logVisit(req, shortObj);
+    res.redirect(shortObj.long);
   } else {
     renderError(404, res, req.templateVars);
   }
 });
 
 // URLS => SCRUD - Update
-app.post("/urls/:shortURL", (req, res) => {
+app.put("/urls/:shortURL", (req, res) => {
   let options = getRouteOptions(req, res);
   decideUpdate(options);
 });
 
 // URLS => SCRUD - Delete
-app.post("/urls/:shortURL/delete", (req, res) => {
+app.delete("/urls/:shortURL", (req, res) => {
   let shortU = req.params.shortURL;
   delete urlDatabase[shortU];
   res.redirect("/urls");

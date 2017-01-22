@@ -39,3 +39,6 @@
 
  ### other validations
  + case insensitive emails
+
+ ## Breakout
+ - creating sample databases for testing
