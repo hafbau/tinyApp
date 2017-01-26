@@ -20,12 +20,13 @@
             <hr>
             <a href="/u/<%= url %>"><%= `${url}` %></a>
             <a href="#"><%= urls[url].long %></a>
-            <a href="/urls/<%= url %>">
-              <div class="navig-link-reverse table-nav">edit</div>
-            </a>
-            <form method="POST" action="/urls/<%= url %>?_method=DELETE" id="faded" class="inline table-nav">
+            
+            <form method="POST" action="/urls/<%= url %>?_method=DELETE" id="faded" class="inline table-nav edit">
               <button>delete</button>
             </form>
+            <a class ="edit" href="/urls/<%= url %>">
+              <div class="navig-link-reverse table-nav">edit</div>
+            </a>
           </li>
         <% } %>
       <% } else { %>
